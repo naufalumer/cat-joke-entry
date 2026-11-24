@@ -35,8 +35,16 @@ def main() -> int:
         return 1
     output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(output_dir, exist_ok=True)
-    with open(os.path.join(output_dir, "entry.txt"), "w", encoding="utf-8") as f:
+    entry_path = os.path.join(output_dir, "entry.txt")
+    with open(entry_path, "w", encoding="utf-8") as f:
         f.write(JOKE)
+    # Read back what was written: the grader runs this program twice and
+    # both runs must produce the same bytes, so fail loudly here instead
+    # of shipping a half-written file.
+    with open(entry_path, encoding="utf-8") as f:
+        if f.read() != JOKE:
+            print("error: entry.txt does not match the joke", file=sys.stderr)
+            return 1
     return 0
 
 
